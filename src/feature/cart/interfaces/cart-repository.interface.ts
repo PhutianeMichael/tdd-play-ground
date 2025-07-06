@@ -1,7 +1,7 @@
 import { Cart, CartItem } from '../entities/cart.entity';
 
 export interface ICartRepository {
-    createCart(id: string, cart: Cart): Promise<Cart>;
+    createCart(cart: Cart): Promise<Cart | null>;
     addItemToCart(id: string, item: CartItem): Promise<boolean>;
     getCartById(id: string): Promise<Cart | null>;
     updateCart(id: string, cart: Cart): Promise<Cart | null>;
