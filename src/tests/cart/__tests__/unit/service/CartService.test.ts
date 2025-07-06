@@ -19,7 +19,6 @@ describe('CartService', () => {
     // Implementation-specific tests
     it('should validate item quantities', async () => {
         const service = serviceFactory();
-        const item = { productId: 'p1', quantity: 2 };
         await expect(service.addItemToCart('user1', 'P1', 0 ))
             .rejects.toThrow('Invalid quantity');
     });
