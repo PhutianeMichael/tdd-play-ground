@@ -1,6 +1,6 @@
-import { IRedisService } from '../../../../../../../shared/infrastructure/redis/interfaces/redis.interface';
+import { IRedisService } from "../../../../../../../shared/infrastructure/redis/interfaces/redis.interface";
 
-export class MockRedisService implements IRedisService {
+export class RedisServiceMock implements IRedisService {
     private store: Map<string, { value: string, expiresAt?: number }> = new Map();
     private healthy = true;
 

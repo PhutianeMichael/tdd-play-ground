@@ -1,14 +1,16 @@
-import { MockCartRepository } from '../../mocks/MockCartRepository';
+import { CartRepositoryMock } from '../../mocks/CartRepository.mock';
 import { CartService } from '../../../../../feature/cart/services/cart.service';
-import { testCartServiceContract } from '../../contracts/cartService.contract.test';
+import { testCartServiceContract } from '../../contracts/cartService.contract';
 import { container } from '../../../../../container';
 import { TYPES } from '../../../../../types';
 import { Cart, CartItem } from '../../../../../feature/cart/entities/cart.entity';
-import { MockRedisService } from '../../shared/infrastructure/redis/mocks/MockRedisService';
+import {
+    RedisServiceMock
+} from '../../../../shared/infrastructure/redis/__tests__/unit/mocks/RedisService.mock';
 
 describe('CartService', () => {
-    const mockRepo = new MockCartRepository();
-    const mockRedis = new MockRedisService();
+    const mockRepo = new CartRepositoryMock();
+    const mockRedis = new RedisServiceMock();
     const serviceFactory = () => new CartService(mockRepo, mockRedis);
     const cleanup = async () => mockRepo.clearAll();
 

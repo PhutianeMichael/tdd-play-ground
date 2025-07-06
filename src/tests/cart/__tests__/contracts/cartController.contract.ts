@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import { ICartController } from '../../../../feature/cart/interfaces/cart-controller.interface';
-import { ICartService } from '../../../../feature/cart/interfaces/cart-service.interface';
+import { CartControllerMock } from '../mocks/CartController.mock';
 
-type ControllerFactory = (service: ICartService) => ICartController;
+type CartControllerFactory = () => ICartController;
 
-export function testCartControllerContract(factory: ControllerFactory) {
+export function testCartControllerContract(factory: CartControllerFactory, cleanup?: () => Promise<void> | void) {
     describe('ICartController contract', () => {
         let controller: ICartController;
         let req: Partial<Request>;
@@ -15,18 +15,7 @@ export function testCartControllerContract(factory: ControllerFactory) {
         let mockCartService: any;
 
         beforeEach(() => {
-            // Create a mockCartService with Jest mock functions
-            mockCartService = {
-                createCart: jest.fn().mockResolvedValue({ cartId: 'cart1', userId: 'user1', items: [] }),
-                addItemToCart: jest.fn().mockResolvedValue({ cartId: 'cart1', userId: 'user1', items: [{ id: 'item1', quantity: 2 }] }),
-                removeItemFromCart: jest.fn().mockResolvedValue({ cartId: 'cart1', userId: 'user1', items: [] }),
-                updateItemQuantity: jest.fn().mockResolvedValue({ cartId: 'cart1', userId: 'user1', items: [{ id: 'item1', quantity: 3 }] }),
-                getCartByUserId: jest.fn().mockResolvedValue({ cartId: 'cart1', userId: 'user1', items: [] }),
-                getCartItems: jest.fn().mockResolvedValue([{ id: 'item1', quantity: 2 }]),
-                clearCart: jest.fn().mockResolvedValue({ cartId: 'cart1', userId: 'user1', items: [] })
-            };
-            // Pass the mockCartService to the controller factory if supported
-            controller = factory(mockCartService);
+            controller = factory();
             statusCode = undefined;
             jsonResponse = undefined;
             req = {};
@@ -41,6 +30,12 @@ export function testCartControllerContract(factory: ControllerFactory) {
                 }
             };
         });
+
+        if (cleanup) {
+            afterEach(async () => {
+                await cleanup();
+            });
+        }
 
         it('should implement createCart', async () => {
             req.body = { userId: 'user1' };
@@ -113,3 +108,5 @@ export function testCartControllerContract(factory: ControllerFactory) {
         });
     });
 }
+
+testCartControllerContract(() => new CartControllerMock());

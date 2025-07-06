@@ -2,7 +2,7 @@ import { ICartRepository } from '../../../../feature/cart/interfaces/cart-reposi
 import { Cart, CartItem } from '../../../../feature/cart/entities/cart.entity';
 import {  ObjectId } from 'mongodb';
 
-export class MockCartRepository implements ICartRepository {
+export class CartRepositoryMock implements ICartRepository {
     private carts: Map<string, Cart> = new Map();
     emptyCartData: Cart = {
         id: new ObjectId(),

@@ -1,8 +1,11 @@
-import { MockRedisService } from '../mocks/MockRedisService';
+
 import { testRedisServiceContract } from '../contracts/redisService.contract.test';
+import {
+    RedisServiceMock
+} from '../../../../../../shared/infrastructure/redis/__tests__/unit/mocks/RedisService.mock';
 
 describe('MockRedisService', () => {
-    const mockRedis = new MockRedisService();
+    const mockRedis = new RedisServiceMock();
     const factory = () => mockRedis;
     const cleanup = async () => await mockRedis.disconnect();
 
