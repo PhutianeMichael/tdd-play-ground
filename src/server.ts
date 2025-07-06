@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import express from 'express';
 import helmet from 'helmet';
+import morgan from 'morgan';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -12,6 +13,7 @@ import swaggerUi from 'swagger-ui-express';
 import env from './config';
 import path from 'path';
 import { connectToMongoDB, closeMongoDB } from './mongodb';
+import { setupContainer } from './container';
 
 const app = express();
 
@@ -100,6 +102,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(compression());
 
 // Logging Middleware
+app.use(morgan(env.LOG_FORMAT, {
+    skip: (req) => req.path === '/health',
+    stream: {
+        write: (message: string) => logger.info(message.trim())
+    }
+}));
 
 // ======================
 // Routes
@@ -110,6 +118,15 @@ if (env.ENABLE_SWAGGER) {
     logger.info(`Swagger UI available at /api-docs`);
 }
 
+// Health Check Route
+app.get('/health', (req, res) => {
+    res.json({
+        status: 'OK',
+        timestamp: new Date(),
+        environment: env.NODE_ENV,
+        swaggerEnabled: env.ENABLE_SWAGGER
+    });
+});
 
 // ======================
 // Error Handling
@@ -133,6 +150,7 @@ app.use((err: Error, req: express.Request, res: express.Response) => {
 // ======================
 async function startServer() {
     try {
+        await setupContainer();
         await connectToMongoDB();
         const server = app.listen(env.PORT, () => {
             logger.info(`Server started`, {
@@ -157,6 +175,9 @@ async function startServer() {
     }
 }
 
-startServer();
+// Only start the server if this file is run directly (not imported by tests)
+if (require.main === module) {
+    startServer();
+}
 
 export { app, logger };
