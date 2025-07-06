@@ -4,7 +4,7 @@ import { testCartServiceContract } from '../../contracts/cartService.contract.te
 import { container } from '../../../../../container';
 import { TYPES } from '../../../../../types';
 import { Cart, CartItem } from '../../../../../feature/cart/entities/cart.entity';
-import { MockRedisService } from '../../../../shared/infrastructure/redis/mocks/MockRedisService';
+import { MockRedisService } from '../../shared/infrastructure/redis/mocks/MockRedisService';
 
 describe('CartService', () => {
     const mockRepo = new MockCartRepository();

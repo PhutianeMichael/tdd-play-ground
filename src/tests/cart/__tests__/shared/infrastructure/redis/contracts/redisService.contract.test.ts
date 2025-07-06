@@ -1,4 +1,4 @@
-import { IRedisService } from '../../../../../shared/infrastructure/redis/interfaces/redis.interface';
+import { IRedisService } from '../../../../../../../shared/infrastructure/redis/interfaces/redis.interface';
 
 type RedisServiceFactory = () => IRedisService;
 
