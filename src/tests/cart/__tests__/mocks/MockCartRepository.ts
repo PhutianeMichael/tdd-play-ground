@@ -4,14 +4,6 @@ import {  ObjectId } from 'mongodb';
 
 export class MockCartRepository implements ICartRepository {
     private carts: Map<string, Cart> = new Map();
-    cartData: Cart = {
-        id: new ObjectId(),
-        createdAt: new Date(),
-        items: [],
-        totalAmount: 0,
-        updatedAt: new Date(),
-        userId: new ObjectId().toString()
-    }
     emptyCartData: Cart = {
         id: new ObjectId(),
         createdAt: new Date(),
@@ -21,8 +13,8 @@ export class MockCartRepository implements ICartRepository {
         userId: new ObjectId().toString()
     }
 
-    async createCart(id: string, cart: Cart): Promise<Cart> {
-        this.carts.set(id, cart);
+    async createCart(cart: Cart): Promise<Cart | null> {
+        this.carts.set(cart.userId, cart);
         return cart;
     }
     async addItemToCart(id: string, item: CartItem): Promise<boolean> {

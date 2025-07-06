@@ -4,10 +4,12 @@ import { testCartServiceContract } from '../../contracts/cartService.contract.te
 import { container } from '../../../../../container';
 import { TYPES } from '../../../../../types';
 import { Cart, CartItem } from '../../../../../feature/cart/entities/cart.entity';
+import { MockRedisService } from '../../../../shared/infrastructure/redis/mocks/MockRedisService';
 
 describe('CartService', () => {
     const mockRepo = new MockCartRepository();
-    const serviceFactory = () => new CartService(mockRepo);
+    const mockRedis = new MockRedisService();
+    const serviceFactory = () => new CartService(mockRepo, mockRedis);
     const cleanup = async () => mockRepo.clearAll();
 
     beforeAll(() => {
@@ -52,7 +54,7 @@ describe('CartService', () => {
 
     it('should empty cart items', async () => {
         const service = serviceFactory();
-        await mockRepo.createCart('user1', new Cart({ items: [new CartItem()] }));
+        await mockRepo.createCart(new Cart({ items: [new CartItem()] }));
         const result = await service.clearCart('user1');
         expect(result).toBe(true);
         expect((await mockRepo.getCartById('user1'))?.items).toHaveLength(0);

@@ -2,11 +2,18 @@ import { container } from '../../../../../container';
 import { CartService } from '../../../../../feature/cart/services/cart.service';
 import { TYPES } from '../../../../../types';
 import { ICartService } from '../../../../../feature/cart/interfaces/cart-service.interface';
+import { IRedisService } from '../../../../../shared/infrastructure/redis/interfaces/redis.interface';
+import { RedisService } from '../../../../../shared/infrastructure/redis/services/redis.service';
 
 describe('Container', () => {
     it('should resolve ICartService to CartService', () => {
         const service = container.get<ICartService>(TYPES.ICartService);
         expect(service).toBeInstanceOf(CartService);
+    });
+
+    it('should resolve IRedisService to RedisService', () => {
+        const redisService = container.get<IRedisService>(TYPES.IRedisService);
+        expect(redisService).toBeInstanceOf(RedisService);
     });
 
     it('should resolve all dependencies without errors', () => {
@@ -15,5 +22,16 @@ describe('Container', () => {
             container.get(TYPES.ICartService);
             container.get(TYPES.ICartRepository);
         }).not.toThrow();
+    });
+
+    it('should resolve ICartService as a singleton', () => {
+        const service1 = container.get<ICartService>(TYPES.ICartService);
+        const service2 = container.get<ICartService>(TYPES.ICartService);
+        expect(service1).toBe(service2);
+    });
+    it('should resolve IRedisService as a singleton', () => {
+        const redis1 = container.get<IRedisService>(TYPES.IRedisService);
+        const redis2 = container.get<IRedisService>(TYPES.IRedisService);
+        expect(redis1).toBe(redis2);
     });
 });
