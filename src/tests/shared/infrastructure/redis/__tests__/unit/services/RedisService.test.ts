@@ -1,7 +1,5 @@
 import { RedisService } from '../../../../../../../shared/infrastructure/redis/services/redis.service';
-import {
-    testRedisServiceContract
-} from '../../../../../../cart/__tests__/shared/infrastructure/redis/contracts/redisService.contract.test';
+import { testRedisServiceContract } from '../contracts/redisService.contract';
 
 describe('RedisService', () => {
     const redisService = new RedisService();
