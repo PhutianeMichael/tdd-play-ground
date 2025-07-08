@@ -7,8 +7,6 @@ import { RedisService } from '../../../../../shared/infrastructure/redis/service
 import RedisMock from 'ioredis-mock';
 
 describe('Container', () => {
-    let redisService: RedisService;
-
     beforeAll(async () => {
         await setupContainer();
         // Rebind IRedisService to use ioredis-mock for all resolutions in this test suite

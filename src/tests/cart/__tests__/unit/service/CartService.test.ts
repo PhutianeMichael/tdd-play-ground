@@ -24,27 +24,7 @@ describe('CartService', () => {
         quantity: 10,
         subtotal: 50
     };
-    const cartItem1: CartItem = {
-        _id: new ObjectId(),
-        name: 'Test Product Item1',
-        price: 6,
-        productId: new ObjectId().toString(),
-        quantity: 10,
-        subtotal: 51
-    };
     const userId = new ObjectId();
-    const cartId = new ObjectId();
-    const cart = new Cart({
-        _id: cartId,
-        userId: userId.toString(),
-        items: [cartItem1],
-        totalAmount: 50
-    });
-    const cartRequestBody: Partial<Cart> = new Cart({
-        userId: userId.toString(),
-        items: [],
-        totalAmount: 50
-    });
 
     beforeAll(() => {
         if (container.isBound(TYPES.ICartRepository)) {

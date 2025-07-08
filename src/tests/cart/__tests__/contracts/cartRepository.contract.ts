@@ -2,8 +2,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MongoClient, Db, ObjectId } from 'mongodb';
 import { ICartRepository } from '../../../../feature/cart/interfaces/cart-repository.interface';
 import { CartRepository } from '../../../../feature/cart/repositories/cart.repository';
-import { Cart, CartItem } from '../../../../feature/cart/entities/cart.entity';
-import { logger } from '../../../../server';
+import { CartItem } from '../../../../feature/cart/entities/cart.entity';
 
 let mongod: MongoMemoryServer;
 let client: MongoClient;
@@ -22,7 +21,6 @@ type CartRepositoryFactory = () => ICartRepository;
 export function testCartRepositoryContract(factory: CartRepositoryFactory, cleanup?: () => Promise<void> | void) {
     describe('ICartRepository contract', () => {
         let repo: ICartRepository;
-        const productId = new ObjectId().toString();
         let userId: string;
 
         beforeEach(() => {

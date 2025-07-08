@@ -15,13 +15,7 @@ export function testCartControllerContract(factory: CartControllerFactory, clean
         const cartId = new ObjectId().toString();
         const userId = new ObjectId().toString();
         const itemId = new ObjectId().toString();
-        const productId = new ObjectId().toString();
-        const item = { id: itemId, productId, name: 'Test Item', quantity: 1, price: 10 };
-        const cart = {
-            id: cartId,
-            userId,
-            items: [item]
-        };
+
         // Add mockCartService for side effect assertions
         let mockCartService: any;
 

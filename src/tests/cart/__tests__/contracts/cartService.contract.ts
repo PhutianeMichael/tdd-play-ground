@@ -21,7 +21,7 @@ export function testCartServiceContract(factory: CartServiceFactory, cleanup?: (
     }
 
     it("should create a cart and retrieve it by userId", async () => {
-      const cart = await cartService.createCart({userId});
+      await cartService.createCart({userId});
       const found = await cartService.getCartByUserId(userId);
       expect(found).not.toBeNull();
       expect(found?.userId).toBe(userId);
