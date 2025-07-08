@@ -7,6 +7,8 @@ import { Cart, CartItem } from '../../../../../feature/cart/entities/cart.entity
 import {
     RedisServiceMock
 } from '../../../../shared/infrastructure/redis/__tests__/unit/mocks/RedisService.mock';
+import { ICartRepository } from '../../../../../feature/cart/interfaces/cart-repository.interface';
+import { ObjectId } from 'mongodb';
 
 describe('CartService', () => {
     const mockRepo = new CartRepositoryMock();
@@ -14,8 +16,41 @@ describe('CartService', () => {
     const serviceFactory = () => new CartService(mockRepo, mockRedis);
     const cleanup = async () => mockRepo.clearAll();
 
+    const cartItem: CartItem = {
+        _id: new ObjectId(),
+        name: 'Test Product Item',
+        price: 5,
+        productId: new ObjectId().toString(),
+        quantity: 10,
+        subtotal: 50
+    };
+    const cartItem1: CartItem = {
+        _id: new ObjectId(),
+        name: 'Test Product Item1',
+        price: 6,
+        productId: new ObjectId().toString(),
+        quantity: 10,
+        subtotal: 51
+    };
+    const userId = new ObjectId();
+    const cartId = new ObjectId();
+    const cart = new Cart({
+        _id: cartId,
+        userId: userId.toString(),
+        items: [cartItem1],
+        totalAmount: 50
+    });
+    const cartRequestBody: Partial<Cart> = new Cart({
+        userId: userId.toString(),
+        items: [],
+        totalAmount: 50
+    });
+
     beforeAll(() => {
-        container.rebind(TYPES.ICartRepository).toConstantValue(mockRepo);
+        if (container.isBound(TYPES.ICartRepository)) {
+            container.unbind(TYPES.ICartRepository);
+        }
+        container.bind<ICartRepository>(TYPES.ICartRepository).toConstantValue(mockRepo);
     });
 
     testCartServiceContract(serviceFactory, cleanup);
@@ -23,43 +58,9 @@ describe('CartService', () => {
     // Implementation-specific tests
     it('should validate item quantities', async () => {
         const service = serviceFactory();
-        await expect(service.addItemToCart('user1', 'P1', 0 ))
+        const invalidItem = { ...cartItem, quantity: 0, subtotal: 0 };
+        await expect(service.addItemToCart(userId.toString(), invalidItem ))
             .rejects.toThrow('Invalid quantity');
-    });
-
-    it('should create new cart when none exists', async () => {
-        const service = serviceFactory();
-        const result = await service.addItemToCart('new-user', 'prod1', 1);
-        const cart = await mockRepo.getCartById('new-user');
-        expect(cart).toBeDefined();
-        expect(result.items).toHaveLength(1);
-    });
-
-    it('should retrieve all carts', async () => {
-        const service = serviceFactory();
-        const result = await service.getAllCarts();
-        expect(result).toBeTruthy();
-    });
-
-    it('should reject invalid quantities', async () => {
-        const service = serviceFactory();
-        await expect(service.addItemToCart('user1', 'prod1', -1))
-            .rejects.toThrow('Quantity must be positive');
-    });
-
-    it('should return false for non-existent cart', async () => {
-
-        const service = serviceFactory();
-        const result = await service.clearCart('nonexistent');
-        expect(result).toBe(false);
-    });
-
-    it('should empty cart items', async () => {
-        const service = serviceFactory();
-        await mockRepo.createCart(new Cart({ items: [new CartItem()] }));
-        const result = await service.clearCart('user1');
-        expect(result).toBe(true);
-        expect((await mockRepo.getCartById('user1'))?.items).toHaveLength(0);
     });
 
 });

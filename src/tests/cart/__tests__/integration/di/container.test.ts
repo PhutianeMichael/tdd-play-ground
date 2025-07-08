@@ -1,11 +1,28 @@
-import { container } from '../../../../../container';
+import { container, setupContainer } from '../../../../../container';
 import { CartService } from '../../../../../feature/cart/services/cart.service';
 import { TYPES } from '../../../../../types';
 import { ICartService } from '../../../../../feature/cart/interfaces/cart-service.interface';
 import { IRedisService } from '../../../../../shared/infrastructure/redis/interfaces/redis.interface';
 import { RedisService } from '../../../../../shared/infrastructure/redis/services/redis.service';
+import RedisMock from 'ioredis-mock';
 
 describe('Container', () => {
+    let redisService: RedisService;
+
+    beforeAll(async () => {
+        await setupContainer();
+        // Rebind IRedisService to use ioredis-mock for all resolutions in this test suite
+        container.rebind(TYPES.IRedisService)
+            .toDynamicValue(() => new RedisService(new RedisMock()))
+            .inSingletonScope();
+        // Also rebind ICartRepository to a mock for isolation
+        const { CartRepositoryMock } = await import('../../mocks/CartRepository.mock');
+        if (container.isBound(TYPES.ICartRepository)) {
+            container.unbind(TYPES.ICartRepository);
+        }
+        container.bind(TYPES.ICartRepository).to(CartRepositoryMock).inSingletonScope();
+    });
+
     it('should resolve ICartService to CartService', () => {
         const service = container.get<ICartService>(TYPES.ICartService);
         expect(service).toBeInstanceOf(CartService);

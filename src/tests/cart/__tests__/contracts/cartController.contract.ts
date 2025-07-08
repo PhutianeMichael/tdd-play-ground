@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { ICartController } from '../../../../feature/cart/interfaces/cart-controller.interface';
 import { CartControllerMock } from '../mocks/CartController.mock';
+import { ObjectId } from 'mongodb';
 
 type CartControllerFactory = () => ICartController;
 
@@ -11,6 +12,16 @@ export function testCartControllerContract(factory: CartControllerFactory, clean
         let res: Partial<Response>;
         let statusCode: number | undefined;
         let jsonResponse: any;
+        const cartId = new ObjectId().toString();
+        const userId = new ObjectId().toString();
+        const itemId = new ObjectId().toString();
+        const productId = new ObjectId().toString();
+        const item = { id: itemId, productId, name: 'Test Item', quantity: 1, price: 10 };
+        const cart = {
+            id: cartId,
+            userId,
+            items: [item]
+        };
         // Add mockCartService for side effect assertions
         let mockCartService: any;
 
@@ -38,73 +49,73 @@ export function testCartControllerContract(factory: CartControllerFactory, clean
         }
 
         it('should implement createCart', async () => {
-            req.body = { userId: 'user1' };
-            const expectedResponse = { cartId: 'cart1', userId: 'user1', items: [] };
+            req.body = { userId };
+            const expectedResponse = { cartId, userId, items: [] };
             await controller.createCart(req as Request, res as Response);
             expect(statusCode).toBe(201); // or the expected status
             expect(jsonResponse).toEqual(expectedResponse);
             // Side effect: service method called
-            expect(mockCartService.createCart).toHaveBeenCalledWith('user1');
+            expect(mockCartService.createCart).toHaveBeenCalledWith(userId);
         });
 
         it('should implement addItemToCart', async () => {
-            req.body = { userId: 'user1', item: { id: 'item1', quantity: 2 } };
-            const expectedResponse = { cartId: 'cart1', userId: 'user1', items: [{ id: 'item1', quantity: 2 }] };
+            req.body = { userId, item: { id: itemId, quantity: 2 } };
+            const expectedResponse = { cartId, userId, items: [{ id: itemId, quantity: 2 }] };
             await controller.addItemToCart(req as Request, res as Response);
             expect(statusCode).toBe(200); // or the expected status
             expect(jsonResponse).toEqual(expectedResponse);
             // Side effect: service method called
-            expect(mockCartService.addItemToCart).toHaveBeenCalledWith('user1', { id: 'item1', quantity: 2 });
+            expect(mockCartService.addItemToCart).toHaveBeenCalledWith(userId, { id: itemId, quantity: 2 });
         });
 
         it('should implement removeItemFromCart', async () => {
-            req.body = { userId: 'user1', itemId: 'item1' };
-            const expectedResponse = { cartId: 'cart1', userId: 'user1', items: [] };
+            req.body = { userId, itemId };
+            const expectedResponse = { cartId, userId, items: [] };
             await controller.removeItemFromCart(req as Request, res as Response);
             expect(statusCode).toBe(200);
             expect(jsonResponse).toEqual(expectedResponse);
             // Side effect: service method called
-            expect(mockCartService.removeItemFromCart).toHaveBeenCalledWith('user1', 'item1');
+            expect(mockCartService.removeItemFromCart).toHaveBeenCalledWith(userId, itemId);
         });
 
         it('should implement updateItemQuantity', async () => {
-            req.body = { userId: 'user1', itemId: 'item1', quantity: 3 };
-            const expectedResponse = { cartId: 'cart1', userId: 'user1', items: [{ id: 'item1', quantity: 3 }] };
+            req.body = { userId, itemId, quantity: 3 };
+            const expectedResponse = { cartId, userId, items: [{ id: itemId, quantity: 3 }] };
             await controller.updateItemQuantity(req as Request, res as Response);
             expect(statusCode).toBe(200);
             expect(jsonResponse).toEqual(expectedResponse);
             // Side effect: service method called
-            expect(mockCartService.updateItemQuantity).toHaveBeenCalledWith('user1', 'item1', 3);
+            expect(mockCartService.updateItemQuantity).toHaveBeenCalledWith(userId, itemId, 3);
         });
 
         it('should implement getCartById', async () => {
-            req.params = { userId: 'user1' };
-            const expectedResponse = { cartId: 'cart1', userId: 'user1', items: [] };
+            req.params = { userId };
+            const expectedResponse = { cartId, userId, items: [] };
             await controller.getCartByUserId(req as Request, res as Response);
             expect(statusCode).toBe(200);
             expect(jsonResponse).toEqual(expectedResponse);
             // Side effect: service method called
-            expect(mockCartService.getCartByUserId).toHaveBeenCalledWith('user1');
+            expect(mockCartService.getCartByUserId).toHaveBeenCalledWith(userId);
         });
 
         it('should implement getCartItems', async () => {
-            req.params = { userId: 'user1' };
-            const expectedResponse = [{ id: 'item1', quantity: 2 }];
+            req.params = { userId };
+            const expectedResponse = [{ id: itemId, quantity: 2 }];
             await controller.getCartItems(req as Request, res as Response);
             expect(statusCode).toBe(200);
             expect(jsonResponse).toEqual(expectedResponse);
             // Side effect: service method called
-            expect(mockCartService.getCartItems).toHaveBeenCalledWith('user1');
+            expect(mockCartService.getCartItems).toHaveBeenCalledWith(userId);
         });
 
         it('should implement clearCart', async () => {
-            req.body = { userId: 'user1' };
-            const expectedResponse = { cartId: 'cart1', userId: 'user1', items: [] };
+            req.body = { userId};
+            const expectedResponse = { cartId, userId, items: [] };
             await controller.clearCart(req as Request, res as Response);
             expect(statusCode).toBe(200);
             expect(jsonResponse).toEqual(expectedResponse);
             // Side effect: service method called
-            expect(mockCartService.clearCart).toHaveBeenCalledWith('user1');
+            expect(mockCartService.clearCart).toHaveBeenCalledWith(userId);
         });
     });
 }
