@@ -3,7 +3,7 @@ import { CartService } from '../../../../../feature/cart/services/cart.service';
 import { testCartServiceContract } from '../../contracts/cartService.contract';
 import { container } from '../../../../../container';
 import { TYPES } from '../../../../../types';
-import { Cart, CartItem } from '../../../../../feature/cart/entities/cart.entity';
+import { CartItem } from '../../../../../feature/cart/entities/cart.entity';
 import {
     RedisServiceMock
 } from '../../../../shared/infrastructure/redis/__tests__/unit/mocks/RedisService.mock';
